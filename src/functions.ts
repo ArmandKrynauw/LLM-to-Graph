@@ -1,4 +1,7 @@
-type FunctionNames = "getCurrentWeather" | "addNodes" | "removeNodes" | "addEdges" | "removeEdges";
+import { graphV1 as graph, type GraphNode } from "./graph";
+import { toolbox } from "./toolbox";
+
+type FunctionNames = "addNodes" | "removeNodes" | "addEdges" | "removeEdges";
 
 type FunctionDescription = {
     name: FunctionNames;
@@ -9,36 +12,21 @@ type FunctionDescription = {
 // ========== Function Descriptions ==========
 
 export const functions = [
-    // {
-    //     name: "getCurrentWeather",
-    //     description: "Get the current weather in a given location",
-    //     parameters: {
-    //         type: "object",
-    //         properties: {
-    //             location: {
-    //                 type: "string",
-    //                 description: "The city as a single word with no spaces e.g. HongKong, SanFrancisco",
-    //             },
-    //             unit: { type: "string", enum: ["celsius", "fahrenheit"] },
-    //         },
-    //         required: ["location"],
-    //     },
-    // },
     {
         name: "addNodes",
         description: "Add a new nodes to the provided graph",
         parameters: {
             type: "object",
             properties: {
-                nodes: {
+                signatures: {
                     type: "array",
                     items: {
                         "type": "string"
                     },
-                    description: "An array of node signatures which has to be added for every node. e.g math.sum, math.divide",
+                    description: "An array of node signatures representing each node to be added. e.g math.sum, math.divide",
                 },
             },
-            required: ["nodes"],
+            required: ["signatures"],
         },
     },
     {
@@ -107,25 +95,72 @@ export const functions = [
 
 // ========== Function Definitions ==========
 
-async function getCurrentWeather(location: string, unit = "celsius") {
-    try {
-        const response = await fetch(
-            `https://goweather.herokuapp.com/weather/${location}`
-        );
-        const data = await response.json();
-        console.log("Data", data);
-        return data;
-    } catch (error) {
-        console.log(error);
+async function addNodes(signatures: string[]) {
+    const addedNodes = [];
+
+    for (const signature of signatures)  {
+        if (!(signature in toolbox)) {
+            throw Error(`Node with signature '${signature}' does not exist`);
+        }
+
+        const nodeId = `${graph.length}`
+
+        const inputs = toolbox[signature].inputs;
+        const outputs = toolbox[signature].outputs;
+        let count = 0;
+
+        graph.push({
+            id: nodeId,
+            signature,
+            inputs: inputs.map((input) => ({
+                id: `${nodeId}.${count++}`,
+                type: input
+            })),
+            outputs: outputs.map((output) => ({
+                id: `${nodeId}.${count++}`,
+                type: output
+            })),
+            edges: []
+        });
+
+        addedNodes.push(signature);
     }
+
+    return `The following nodes was added successfully: ${addedNodes.join(", ")}`;
 }
+
+async function removeNodes(nodes: string[]) {
+    for (const id of nodes)  {
+        const index = graph.findIndex((node) => node.id === id);
+        if (index < 0) {
+            throw Error(`Node id is not valid`);
+        }
+        graph.splice(index, 1);
+    }
+    return `Nodes removed successfully`;
+}
+
+async function addEdges(edges) {
+    // TODO 
+    return `Edges added successfully`
+}
+
+async function removeEdges(edges) {
+    // TODO 
+    return `Edges removed successfully`
+}
+
+// ========== Helper Function Definitions ==========
+
 
 // ========== Generic helper to run any function ==========
 
 export async function runFunction(name: string, args: any) {
     switch (name) {
-        case "getCurrentWeather":
-            return await getCurrentWeather(args.location, args.unit);
+        case "addNodes":
+            return await addNodes(args.signatures);
+        case "removeNodes":
+            return await removeNodes(args.nodes);
         default:
             return null;
     }

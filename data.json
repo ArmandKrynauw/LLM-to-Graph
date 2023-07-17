@@ -1,0 +1,87 @@
+[
+  {
+    "id": "0",
+    "signature": "math.sum",
+    "inputs": [
+      {
+        "id": "0.0",
+        "type": "number"
+      },
+      {
+        "id": "0.1",
+        "type": "number"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "0.2",
+        "type": "number"
+      }
+    ],
+    "edges": [
+      {
+        "id": "0.0.0",
+        "from": "0.2",
+        "to": "1.0"
+      },
+      {
+        "id": "0.0.1",
+        "from": "0.2",
+        "to": "1.1"
+      }
+    ]
+  },
+  {
+    "id": "1",
+    "signature": "math.difference",
+    "inputs": [
+      {
+        "id": "1.0",
+        "type": "number"
+      },
+      {
+        "id": "1.1",
+        "type": "number"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "1.2",
+        "type": "number"
+      }
+    ],
+    "edges": [
+      {
+        "id": "0.0.0",
+        "from": "0.2",
+        "to": "1.0"
+      },
+      {
+        "id": "0.0.1",
+        "from": "0.3",
+        "to": "1.1"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "signature": "math.sum",
+    "inputs": [
+      {
+        "id": "2.0",
+        "type": "number"
+      },
+      {
+        "id": "2.1",
+        "type": "number"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "2.2",
+        "type": "number"
+      }
+    ],
+    "edges": []
+  }
+]
